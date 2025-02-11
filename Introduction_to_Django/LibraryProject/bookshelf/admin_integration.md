@@ -1,3 +1,11 @@
+# Integrating Book Model with Django Admin
+
+## Step 1: Register the Book Model
+- Open `bookshelf/admin.py`.
+- Import the `Book` model.
+- Register the model with the admin site.
+
+```python
 from django.contrib import admin
 from .models import Book
 
