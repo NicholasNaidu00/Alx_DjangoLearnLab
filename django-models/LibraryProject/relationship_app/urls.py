@@ -1,12 +1,27 @@
 from django.urls import path
-from .views import list_books, library_detail, library_list, book_detail, add_book, edit_book, delete_book, author_detail, author_list, librarian_detail, librarian_list
+from .views import (
+    list_books, 
+    LibraryDetailView,  # Import LibraryDetailView
+    library_detail, 
+    library_list, 
+    book_detail, 
+    add_book, 
+    edit_book, 
+    delete_book, 
+    author_detail, 
+    author_list, 
+    librarian_detail, 
+    librarian_list
+)
 
 urlpatterns = [
     # Function-based view for listing books
     path('books/', list_books, name='list_books'),
-    
+
+    # Class-based view for displaying library details
+    path('library/<int:pk>/', LibraryDetailView.as_view(), name='library_detail'),
+
     # Other URL patterns
-    path('library/<int:library_id>/', library_detail, name='library_detail'),
     path('libraries/', library_list, name='library_list'),
     path('book/<int:book_id>/', book_detail, name='book_detail'),
     path('add-book/', add_book, name='add_book'),
