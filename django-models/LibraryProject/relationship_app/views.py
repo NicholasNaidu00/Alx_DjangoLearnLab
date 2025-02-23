@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import ListView, DetailView
-from .models import Book, Library  # Assuming you have a Library model defined in models.py
+from .models import Book, Library  # Importing both Book and Library models
 
 # Function-based view to list all books
 def list_books(request):
@@ -13,7 +13,7 @@ def list_books(request):
 # Class-based view to list all books
 class BookListView(ListView):
     model = Book
-    template_name = 'relationship_app/list_books.html'  # Your updated template file
+    template_name = 'relationship_app/list_books.html'
     context_object_name = 'books'  # Default is 'object_list'
 
 # View to display details of a specific book
@@ -38,4 +38,37 @@ def create_book(request):
     if request.method == 'POST':
         title = request.POST.get('title')
         author = request.POST.get('author')
-        new_book = Book
+        new_book = Book(title=title, author=author)
+        new_book.save()
+        return redirect('list_books')
+    return render(request, 'relationship_app/create_book.html')
+
+# View to update an existing book
+def update_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    if request.method == 'POST'):
+        book.title = request.POST.get('title')
+        book.author = request.POST.get('author')
+        book.save()
+        return redirect('list_books')
+    return render(request, 'relationship_app/update_book.html', {'book': book})
+
+# View to delete a book
+def delete_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    if request.method == 'POST'):
+        book.delete()
+        return redirect('list_books')
+    return render(request, 'relationship_app/delete_book.html', {'book': book})
+
+# View to handle user registration
+def register(request):
+    if request.method == 'POST'):
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('list_books')
+    else:
+        form = UserCreationForm()
+    return render(request, 'relationship_app/register.html', {'form': form})
