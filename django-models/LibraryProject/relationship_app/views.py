@@ -1,6 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.views.generic.detail import DetailView  # Import DetailView
+from django.views.generic.detail import DetailView
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.forms import UserCreationForm
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
 from .models import Library, Author, Book, Librarian, UserProfile
 from .forms import BookForm  # Assuming you have a form for adding/editing books
 
@@ -125,3 +129,21 @@ def librarian_list(request):
         'librarians': librarians,
     }
     return render(request, 'relationship_app/librarian_list.html', context)
+
+# ------------------------------
+# User Authentication Views
+# ------------------------------
+
+# Registration View
+class RegisterView(CreateView):
+    form_class = UserCreationForm
+    template_name = 'relationship_app/register.html'
+    success_url = reverse_lazy('login')  # Redirect to login page after successful registration
+
+# Login View
+class LoginView(auth_views.LoginView):
+    template_name = 'relationship_app/login.html'
+
+# Logout View
+class LogoutView(auth_views.LogoutView):
+    template_name = 'relationship_app/logout.html'

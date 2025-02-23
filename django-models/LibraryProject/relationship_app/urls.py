@@ -11,7 +11,10 @@ from .views import (
     author_detail,
     author_list,
     librarian_detail,
-    librarian_list
+    librarian_list,
+    RegisterView,  # Import RegisterView
+    LoginView,     # Import LoginView
+    LogoutView     # Import LogoutView
 )
 
 urlpatterns = [
@@ -31,4 +34,9 @@ urlpatterns = [
     path('authors/', author_list, name='author_list'),
     path('librarian/<int:librarian_id>/', librarian_detail, name='librarian_detail'),
     path('librarians/', librarian_list, name='librarian_list'),
+
+    # User Authentication URLs
+    path('register/', RegisterView.as_view(), name='register'),  # Registration
+    path('login/', LoginView.as_view(), name='login'),           # Login
+    path('logout/', LogoutView.as_view(), name='logout'),        # Logout
 ]
