@@ -9,6 +9,15 @@ def get_library_by_name(library_name):
         print(f'No library found with the name: {library_name}')
         return None
 
+def get_author_by_name(author_name):
+    try:
+        author = Author.objects.get(name=author_name)
+        print(f'Author found: {author.name}, Bio: {author.bio}')
+        return author
+    except Author.DoesNotExist:
+        print(f'No author found with the name: {author_name}')
+        return None
+
 def get_books_in_library(library):
     if library:
         books = library.books.all()  # Retrieves all books related to this library
@@ -20,7 +29,7 @@ def get_books_in_library(library):
 
 def get_books_by_author(author):
     if author:
-        books = author.books.all()  # Retrieves all books written by this author
+        books = Book.objects.filter(author=author)  # Retrieves all books written by this author
         print(f'Books by {author.name}:')
         for book in books:
             print(f' - {book.title} (Published on {book.published_date})')
@@ -43,7 +52,6 @@ if __name__ == "__main__":
     create_sample_data()  # Uncomment to create sample data before querying
     library = get_library_by_name('Central Library')
     get_books_in_library(library)  # Get books in the specified library
-    
-    # If you want, you could also fetch books by a specific author
-    author = Author.objects.get(name='Jane Doe')  # Make sure this author exists
+
+    author = get_author_by_name('Jane Doe')  # Get the author by name
     get_books_by_author(author)  # Get books written by the specified author
