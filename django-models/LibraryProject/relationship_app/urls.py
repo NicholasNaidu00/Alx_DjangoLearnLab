@@ -1,16 +1,16 @@
 from django.urls import path
 from .views import (
-    list_books, 
-    LibraryDetailView,  # Import LibraryDetailView
-    library_detail, 
-    library_list, 
-    book_detail, 
-    add_book, 
-    edit_book, 
-    delete_book, 
-    author_detail, 
-    author_list, 
-    librarian_detail, 
+    list_books,  # Import list_books
+    LibraryDetailView,
+    library_detail,
+    library_list,
+    book_detail,
+    add_book,
+    edit_book,
+    delete_book,
+    author_detail,
+    author_list,
+    librarian_detail,
     librarian_list
 )
 
