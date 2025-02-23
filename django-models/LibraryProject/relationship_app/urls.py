@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-    list_books,  # Function-based view
+    list_books,  # Import list_books function-based view
     LibraryDetailView,  # Class-based view
     library_detail,  # Function-based view
     library_list,  # Function-based view
