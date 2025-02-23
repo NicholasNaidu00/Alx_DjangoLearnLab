@@ -18,6 +18,19 @@ def get_author_by_name(author_name):
         print(f'No author found with the name: {author_name}')
         return None
 
+def get_librarian_by_library(library):
+    if library:
+        try:
+            librarian = Librarian.objects.get(library=library)  # Find librarian for the specific library
+            print(f'Librarian found: {librarian.user.username} (works at: {library.name})')
+            return librarian
+        except Librarian.DoesNotExist:
+            print(f'No librarian found for the library: {library.name}')
+            return None
+    else:
+        print('No library provided to get librarian for.')
+        return None
+
 def get_books_in_library(library):
     if library:
         books = library.books.all()  # Retrieves all books related to this library
@@ -40,11 +53,15 @@ def create_sample_data():
     # Sample data creation to test querying
     library = Library.objects.create(name='Central Library', location='Main St', description='Main city library')
     author = Author.objects.create(name='Jane Doe', bio='An acclaimed author.', date_of_birth='1980-01-01')
+    librarian_user = User.objects.create(username='librarian_jane', password='password')
+    librarian = Librarian.objects.create(user=librarian_user, library=library)
+    
     book1 = Book.objects.create(title='Sample Book 1', author=author, published_date='2023-01-01', library=library)
     book2 = Book.objects.create(title='Sample Book 2', author=author, published_date='2023-02-01', library=library)
 
     print(f'Created library: {library.name}')
     print(f'Created author: {author.name}')
+    print(f'Created librarian: {librarian.user.username} for {library.name}')
     print(f'Created books: {book1.title}, {book2.title}')
 
 # Example usage
@@ -55,3 +72,5 @@ if __name__ == "__main__":
 
     author = get_author_by_name('Jane Doe')  # Get the author by name
     get_books_by_author(author)  # Get books written by the specified author
+    
+    get_librarian_by_library(library)  # Get librarian for the specified library
