@@ -3,6 +3,14 @@ from django.contrib.auth.decorators import login_required
 from .models import Library, Author, Book, Librarian, UserProfile
 from .forms import BookForm  # Assuming you have a form for adding/editing books
 
+# View to display a list of all books
+def list_books(request):
+    books = Book.objects.all()  # Fetch all books from the database
+    context = {
+        'books': books,
+    }
+    return render(request, 'relationship_app/list_books.html', context)
+
 # View to display details of a specific library
 def library_detail(request, library_id):
     library = get_object_or_404(Library, id=library_id)
