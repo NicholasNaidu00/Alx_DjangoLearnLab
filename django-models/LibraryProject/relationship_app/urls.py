@@ -6,9 +6,9 @@ from .views import (
     create_book,
     update_book,
     delete_book,
-    register,  # Custom registration view
+    register,  # Import the register view
 )
-from django.contrib.auth.views import LoginView, LogoutView  # Built-in views for login/logout
+from django.contrib.auth.views import LoginView, LogoutView  # For login/logout views
 
 urlpatterns = [
     path('books/', list_books, name='list_books'),  # URL to view all books
