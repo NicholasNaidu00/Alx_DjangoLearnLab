@@ -1,58 +1,74 @@
-# LibraryProject/relationship_app/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
-from .models import Book  # Assuming you have a Book model defined in models.py
+from django.views.generic import ListView, DetailView
+from .models import Book, Library  # Assuming you have a Library model defined in models.py
 
-# View to list all books
+# Function-based view to list all books
 def list_books(request):
-    books = Book.objects.all()  # Fetch all books from the database
+    books = Book.objects.all()
     return render(request, 'relationship_app/book_list.html', {'books': books})
 
+# Class-based view to list all books
+class BookListView(ListView):
+    model = Book
+    template_name = 'relationship_app/book_list.html'  # Your template file
+    context_object_name = 'books'  # Default is 'object_list'
+
 # View to display details of a specific book
-def book_detail(request, book_id):
-    book = get_object_or_404(Book, id=book_id)  # Get the book or return 404 if not found
-    return render(request, 'relationship_app/book_detail.html', {'book': book})
+class BookDetailView(DetailView):
+    model = Book
+    template_name = 'relationship_app/book_detail.html'
+    context_object_name = 'book'  # Default is 'object'
+
+# Class-based view for library details
+class LibraryDetailView(DetailView):
+    model = Library
+    template_name = 'relationship_app/library_detail.html'
+    context_object_name = 'library'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['books'] = Book.objects.filter(library=self.object)  # Assuming there's a ForeignKey relationship
+        return context
 
 # View to create a new book
 def create_book(request):
     if request.method == 'POST':
         title = request.POST.get('title')
         author = request.POST.get('author')
-        # Add other fields as applicable
-        new_book = Book(title=title, author=author)  # Assuming your Book model has title and author fields
-        new_book.save()  # Save the new book to the database
-        return redirect('list_books')  # Redirect to the book list after creation
-    return render(request, 'relationship_app/create_book.html')  # Render the book creation form
+        new_book = Book(title=title, author=author)
+        new_book.save()
+        return redirect('list_books')
+    return render(request, 'relationship_app/create_book.html')
 
 # View to update an existing book
 def update_book(request, book_id):
-    book = get_object_or_404(Book, id=book_id)  # Get the book or return 404 if not found
+    book = get_object_or_404(Book, id=book_id)
     if request.method == 'POST':
         book.title = request.POST.get('title')
         book.author = request.POST.get('author')
-        # Update other fields as needed
-        book.save()  # Save changes to the book
-        return redirect('list_books')  # Redirect to book list after update
-    return render(request, 'relationship_app/update_book.html', {'book': book})  # Render the update form
+        book.save()
+        return redirect('list_books')
+    return render(request, 'relationship_app/update_book.html', {'book': book})
 
 # View to delete a book
 def delete_book(request, book_id):
-    book = get_object_or_404(Book, id=book_id)  # Get the book or return 404 if not found
+    book = get_object_or_404(Book, id=book_id)
     if request.method == 'POST':
-        book.delete()  # Delete the book from the database
-        return redirect('list_books')  # Redirect to book list after deletion
-    return render(request, 'relationship_app/delete_book.html', {'book': book})  # Render delete confirmation
+        book.delete()
+        return redirect('list_books')
+    return render(request, 'relationship_app/delete_book.html', {'book': book})
 
 # View to handle user registration
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()  # Save the new user to the database
-            login(request, user)  # Log the user in immediately after registration
-            return redirect('list_books')  # Redirect to the book list after successful registration
+            user = form.save()
+            login(request, user)
+            return redirect('list_books')
     else:
-        form = UserCreationForm()  # Create an empty form if the request is not POST
-    return render(request, 'relationship_app/register.html', {'form': form})  # Provide the form to the template
+        form = UserCreationForm()
+    return render(request, 'relationship_app/register.html', {'form': form})
