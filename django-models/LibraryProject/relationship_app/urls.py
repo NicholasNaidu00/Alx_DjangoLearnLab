@@ -24,24 +24,18 @@ urlpatterns = [
     # Class-based view for displaying library details
     path('library/<int:pk>/', LibraryDetailView.as_view(), name='library_detail'),
 
-    # Function-based views for libraries
+    # Other URL patterns
     path('libraries/', library_list, name='library_list'),
-
-    # Function-based views for books
     path('book/<int:book_id>/', book_detail, name='book_detail'),
     path('add-book/', add_book, name='add_book'),
     path('edit-book/<int:book_id>/', edit_book, name='edit_book'),
     path('delete-book/<int:book_id>/', delete_book, name='delete_book'),
-
-    # Function-based views for authors
     path('author/<int:author_id>/', author_detail, name='author_detail'),
     path('authors/', author_list, name='author_list'),
-
-    # Function-based views for librarians
     path('librarian/<int:librarian_id>/', librarian_detail, name='librarian_detail'),
     path('librarians/', librarian_list, name='librarian_list'),
 
-    # Class-based views for user authentication
+    # User Authentication URLs
     path('register/', RegisterView.as_view(), name='register'),  # Registration
     path('login/', LoginView.as_view(), name='login'),  # Login
     path('logout/', LogoutView.as_view(), name='logout'),  # Logout
