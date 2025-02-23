@@ -8,11 +8,6 @@ from .models import Book, Library  # Importing both Book and Library models
 # Function-based view to list all books
 def list_books(request):
     books = Book.objects.all()
-    return render(request, 'relationship_app/list_books.html', {'books': books
-
-# Function-based view to list all books
-def list_books(request):
-    books = Book.objects.all()
     return render(request, 'relationship_app/list_books.html', {'books': books})
 
 # Class-based view to list all books
@@ -51,7 +46,7 @@ def create_book(request):
 # View to update an existing book
 def update_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
-    if request.method == 'POST'):
+    if request.method == 'POST':
         book.title = request.POST.get('title')
         book.author = request.POST.get('author')
         book.save()
@@ -61,14 +56,14 @@ def update_book(request, book_id):
 # View to delete a book
 def delete_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
-    if request.method == 'POST'):
+    if request.method == 'POST':
         book.delete()
         return redirect('list_books')
     return render(request, 'relationship_app/delete_book.html', {'book': book})
 
 # View to handle user registration
 def register(request):
-    if request.method == 'POST'):
+    if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
@@ -77,15 +72,3 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'relationship_app/register.html', {'form': form})
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
-from django.contrib.auth import login
-from django.contrib.auth.forms import UserCreationForm
-from django.views.generic import ListView, DetailView
-from .models import Book, Library  # Importing both Book and Library models
-
-# Function-based view to list all books
-def list_books(request):
-    books = Book.objects.all()
-    return render(request, 'relationship_app/list_books.html', {'books': books
