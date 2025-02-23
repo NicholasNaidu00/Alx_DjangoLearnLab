@@ -1,18 +1,26 @@
-from relationship_app.models import Book, Author, Library
+from relationship_app.models import Library, Author, Book, User, UserProfile, Librarian
 
-# Query all books by a specific author
-def books_by_author(author_name):
-    author = Author.objects.get(name=author_name)
-    books = Book.objects.filter(author=author)
-    return books
+def get_library_by_name(library_name):
+    try:
+        library = Library.objects.get(name=library_name)
+        print(f'Library found: {library.name}, Location: {library.location}')
+        return library
+    except Library.DoesNotExist:
+        print(f'No library found with the name: {library_name}')
+        return None
 
-# List all books in a library
-def books_in_library(library_id):
-    library = Library.objects.get(id=library_id)
-    books = library.books.all()
-    return books
+def create_sample_data():
+    # Sample data creation to test querying
+    library = Library.objects.create(name='Central Library', location='Main St', description='Main city library')
+    author = Author.objects.create(name='Jane Doe', bio='An acclaimed author.', date_of_birth='1980-01-01')
+    book = Book.objects.create(title='Sample Book', author=author, published_date='2023-01-01', library=library)
 
-# Retrieve the librarian for a library
-def librarian_of_library(library_id):
-    library = Library.objects.get(id=library_id)
-    return library.librarian
+    print(f'Created library: {library.name}')
+    print(f'Created author: {author.name}')
+    print(f'Created book: {book.title}')
+
+# Example usage
+if __name__ == "__main__":
+    create_sample_data()  # Uncomment to create sample data before querying
+    get_library_by_name('Central Library')
+    get_library_by_name('Non-existing Library')  # Testing the non-existing case
