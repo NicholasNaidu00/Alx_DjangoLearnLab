@@ -3,9 +3,10 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    
+
     ROLE_CHOICES = (
         ('Admin', 'Admin'),
         ('Librarian', 'Librarian'),
@@ -27,6 +28,14 @@ class Author(models.Model):
         return self.name
 
 
+class Librarian(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    library = models.ForeignKey('Library', related_name='librarians', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'Librarian: {self.user.username} at {self.library.name}'
+
+
 class Library(models.Model):
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=200)
@@ -41,17 +50,22 @@ class Book(models.Model):
     author = models.ForeignKey(Author, related_name='books', on_delete=models.CASCADE)
     published_date = models.DateField()
     library = models.ForeignKey(Library, related_name='books', on_delete=models.CASCADE)
-    
+
     def __str__(self):
         return self.title
 
 
-# Create signal to automatically create or update UserProfile
+# Create signal to automatically create or update UserProfile and Librarian
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
+        if instance.userprofile.role == 'Librarian':  # Automatically create a Librarian
+            Librarian.objects.create(user=instance)
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.userprofile.save()
+    # Save librarian if it exists
+    if hasattr(instance, 'librarian'):
+        instance.librarian.save()
