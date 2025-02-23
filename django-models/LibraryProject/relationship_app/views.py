@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.views.generic.detail import DetailView  # Import DetailView
 from .models import Library, Author, Book, Librarian, UserProfile
 from .forms import BookForm  # Assuming you have a form for adding/editing books
 
