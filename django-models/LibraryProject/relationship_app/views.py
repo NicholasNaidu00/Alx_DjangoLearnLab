@@ -1,74 +1,118 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
-from django.contrib.auth import login
-from django.contrib.auth.forms import UserCreationForm
-from django.views.generic import ListView, DetailView
-from .models import Book, Library  # Importing both Book and Library models
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Library, Author, Book, Librarian, UserProfile
+from .forms import BookForm  # Assuming you have a form for adding/editing books
 
-# Function-based view to list all books
-def list_books(request):
-    books = Book.objects.all()
-    return render(request, 'relationship_app/list_books.html', {'books': books})
+# View to display details of a specific library
+def library_detail(request, library_id):
+    library = get_object_or_404(Library, id=library_id)
+    books = Book.objects.filter(library=library)
+    librarians = Librarian.objects.filter(library=library)
+    
+    context = {
+        'library': library,
+        'books': books,
+        'librarians': librarians,
+    }
+    
+    return render(request, 'relationship_app/library_detail.html', context)
 
-# Class-based view to list all books
-class BookListView(ListView):
-    model = Book
-    template_name = 'relationship_app/list_books.html'
-    context_object_name = 'books'  # Default is 'object_list'
+# View to display a list of all libraries
+def library_list(request):
+    libraries = Library.objects.all()
+    context = {
+        'libraries': libraries,
+    }
+    return render(request, 'relationship_app/library_list.html', context)
 
 # View to display details of a specific book
-class BookDetailView(DetailView):
-    model = Book
-    template_name = 'relationship_app/book_detail.html'
-    context_object_name = 'book'  # Default is 'object'
+def book_detail(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    context = {
+        'book': book,
+    }
+    return render(request, 'relationship_app/book_detail.html', context)
 
-# Class-based view for library details
-class LibraryDetailView(DetailView):
-    model = Library
-    template_name = 'relationship_app/library_detail.html'
-    context_object_name = 'library'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['books'] = Book.objects.filter(library=self.object)  # Assuming there's a ForeignKey relationship
-        return context
-
-# View to create a new book
-def create_book(request):
+# View to add a new book (requires login)
+@login_required
+def add_book(request):
     if request.method == 'POST':
-        title = request.POST.get('title')
-        author = request.POST.get('author')
-        new_book = Book(title=title, author=author)
-        new_book.save()
-        return redirect('list_books')
-    return render(request, 'relationship_app/create_book.html')
+        form = BookForm(request.POST)
+        if form.is_valid():
+            book = form.save(commit=False)
+            book.library = Library.objects.first()  # Assign to the first library for simplicity
+            book.save()
+            return redirect('book_detail', book_id=book.id)
+    else:
+        form = BookForm()
+    
+    context = {
+        'form': form,
+    }
+    return render(request, 'relationship_app/add_book.html', context)
 
-# View to update an existing book
-def update_book(request, book_id):
+# View to edit an existing book (requires login)
+@login_required
+def edit_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     if request.method == 'POST':
-        book.title = request.POST.get('title')
-        book.author = request.POST.get('author')
-        book.save()
-        return redirect('list_books')
-    return render(request, 'relationship_app/update_book.html', {'book': book})
+        form = BookForm(request.POST, instance=book)
+        if form.is_valid():
+            form.save()
+            return redirect('book_detail', book_id=book.id)
+    else:
+        form = BookForm(instance=book)
+    
+    context = {
+        'form': form,
+        'book': book,
+    }
+    return render(request, 'relationship_app/edit_book.html', context)
 
-# View to delete a book
+# View to delete a book (requires login)
+@login_required
 def delete_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     if request.method == 'POST':
         book.delete()
-        return redirect('list_books')
-    return render(request, 'relationship_app/delete_book.html', {'book': book})
+        return redirect('library_list')
+    
+    context = {
+        'book': book,
+    }
+    return render(request, 'relationship_app/delete_book.html', context)
 
-# View to handle user registration
-def register(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('list_books')
-    else:
-        form = UserCreationForm()
-    return render(request, 'relationship_app/register.html', {'form': form})
+# View to display details of a specific author
+def author_detail(request, author_id):
+    author = get_object_or_404(Author, id=author_id)
+    books = Book.objects.filter(author=author)
+    
+    context = {
+        'author': author,
+        'books': books,
+    }
+    return render(request, 'relationship_app/author_detail.html', context)
+
+# View to display a list of all authors
+def author_list(request):
+    authors = Author.objects.all()
+    context = {
+        'authors': authors,
+    }
+    return render(request, 'relationship_app/author_list.html', context)
+
+# View to display details of a specific librarian
+def librarian_detail(request, librarian_id):
+    librarian = get_object_or_404(Librarian, id=librarian_id)
+    context = {
+        'librarian': librarian,
+    }
+    return render(request, 'relationship_app/librarian_detail.html', context)
+
+# View to display a list of all librarians
+def librarian_list(request):
+    librarians = Librarian.objects.all()
+    context = {
+        'librarians': librarians,
+    }
+    return render(request, 'relationship_app/librarian_list.html', context)
