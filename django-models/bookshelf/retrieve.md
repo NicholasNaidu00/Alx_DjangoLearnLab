@@ -1,16 +1,9 @@
-# Retrieve
-```python
+## python command
 from bookshelf.models import Book
 
-# Retrieve the book
-book = Book.objects.get(title="1984")
-print(book.title, book.author, book.publication_year)
-# Expected Output: 1984 George Orwell 1949
+book=Book.objects.get(publication_year="1949")
+ 
+print(f"Title: {book.title}, Author: {book.author}, Publication Date: {book.publication_year}")
 
-
-#### Update the Book Title
-```python
-# Update the title
-book.title = "Nineteen Eighty-Four"
-book.save()
-print(book.title)
+## expected output
+Title: 1984, Author: George Orwell, Publication Date: 1949

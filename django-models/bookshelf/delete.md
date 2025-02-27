@@ -1,11 +1,10 @@
-# Delete
-```python
+## delete python command
 from bookshelf.models import Book
-
-# Delete the book
+book=Book.objects.get(publication_year="1949")
 book.delete()
 
-# Confirm deletion
-books = Book.objects.all()
+books = Book.object.all()
 print(books)
-# Expected Output: <QuerySet []>
+
+## expected output 
+ QuerySet []
